@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>English Hindi Word Match Tool</title>
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:#f4f6fb;
+text-align:center;
+padding:20px;
+}
+
+h2{
+margin:10px 0;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,160px);
+justify-content:center;
+gap:12px;
+margin:15px 0;
+}
+
+.wordBtn{
+padding:14px;
+font-size:18px;
+border:none;
+cursor:pointer;
+border-radius:12px;
+transition:0.3s;
+font-weight:bold;
+}
+
+.wordBtn:hover{
+transform:scale(1.05);
+}
+
+.selected{
+border:3px solid black;
+}
+
+.controls{
+margin-top:20px;
+}
+
+.checkBtn{
+background:#28a745;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+}
+
+.nextBtn{
+background:#007bff;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+margin-left:10px;
+display:none;
+}
+
+#status{
+font-size:20px;
+font-weight:bold;
+margin:0 15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<hr>
+
+<h2>English Words</h2>
+
+<div class="grid" id="englishWords"></div>
+
+<hr>
+
+<h2>Hindi Words</h2>
+
+<div class="grid" id="hindiWords"></div>
+
+<hr>
+
+<div class="controls">
+
+<button class="checkBtn" onclick="checkAnswer()">Check</button>
+
+<span id="status"></span>
+
+<button class="nextBtn" id="nextBtn" onclick="loadWords()">Next</button>
+
+</div>
+
+<!-- Click Sound -->
+
+<audio id="clickSound" src="https://drive.google.com/uc?export=download&id=1bDEmfbDtrQ5mSKU3Q4ZhKG8xh_ZwD1aR"></audio>
+
+<script>
+
+let englishSelected=null;
+let hindiSelected=null;
+
+let clickSound=document.getElementById("clickSound");
+
+let words=[
+
+{eng:"Apple",hin:"सेब"},
+{eng:"Book",hin:"किताब"},
+{eng:"Water",hin:"पानी"},
+{eng:"Sun",hin:"सूरज"},
+{eng:"Moon",hin:"चाँद"},
+{eng:"Dog",hin:"कुत्ता"},
+{eng:"Cat",hin:"बिल्ली"},
+{eng:"House",hin:"घर"},
+{eng:"Tree",hin:"पेड़"},
+{eng:"Milk",hin:"दूध"},
+{eng:"Road",hin:"सड़क"},
+{eng:"Fire",hin:"आग"}
+
+];
+
+let currentSet=[];
+
+const colorPairs=[
+{bg:"#ff6b6b",text:"#ffffff"},
+{bg:"#4dabf7",text:"#ffffff"},
+{bg:"#51cf66",text:"#ffffff"},
+{bg:"#ffd43b",text:"#000000"},
+{bg:"#845ef7",text:"#ffffff"},
+{bg:"#ff922b",text:"#ffffff"},
+{bg:"#20c997",text:"#ffffff"},
+{bg:"#339af0",text:"#ffffff"},
+{bg:"#f06595",text:"#ffffff"},
+{bg:"#94d82d",text:"#000000"}
+];
+
+function randomColorPair(){
+
+return colorPairs[Math.floor(Math.random()*colorPairs.length)];
+
+}
+
+function loadWords(){
+
+englishSelected=null;
+hindiSelected=null;
+
+document.getElementById("status").innerText="";
+document.getElementById("nextBtn").style.display="none";
+
+let engDiv=document.getElementById("englishWords");
+let hinDiv=document.getElementById("hindiWords");
+
+engDiv.innerHTML="";
+hinDiv.innerHTML="";
+
+
+let shuffled=[...words].sort(()=>0.5-Math.random()).slice(0,6);
+
+currentSet=shuffled;
+
+let hindiList=[...shuffled].map(w=>w.hin).sort(()=>0.5-Math.random());
+
+
+shuffled.forEach(word=>{
+
+let btn=document.createElement("button");
+
+let color=randomColorPair();
+
+btn.innerText=word.eng;
+
+btn.className="wordBtn";
+
+btn.style.background=color.bg;
+
+btn.style.color=color.text;
+
+btn.onclick=function(){
+
+if(englishSelected) return;
+
+englishSelected=word.eng;
+
+btn.classList.add("selected");
+
+clickSound.play();
+
+};
+
+engDiv.appendChild(btn);
+
+});
+
+
+hindiList.forEach(word=>{
+
+let btn=document.createElement("button");
+
+let color=randomColorPair();
+
+btn.innerText=word;
+
+btn.className="wordBtn";
+
+btn.style.background=color.bg;
+
+btn.style.color=color.text;
+
+btn.onclick=function(){
+
+if(hindiSelected) return;
+
+hindiSelected=word;
+
+btn.classList.add("selected");
+
+clickSound.play();
+
+};
+
+hinDiv.appendChild(btn);
+
+});
+
+}
+
+
+function checkAnswer(){
+
+if(!englishSelected || !hindiSelected){
+
+document.getElementById("status").innerText="Select both words";
+
+return;
+
+}
+
+let correct=currentSet.find(w=>w.eng===englishSelected);
+
+if(correct.hin===hindiSelected){
+
+document.getElementById("status").innerText="Right ✅";
+document.getElementById("status").style.color="green";
+
+}else{
+
+document.getElementById("status").innerText="Wrong ❌";
+document.getElementById("status").style.color="red";
+
+}
+
+document.getElementById("nextBtn").style.display="inline-block";
+
+}
+
+loadWords();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Random Alphabet Generator</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#111;
+    font-family:Arial, sans-serif;
+}
+
+.container{
+    text-align:center;
+}
+
+#letterBox{
+    width:200px;
+    height:200px;
+    background:black;
+    border:8px solid green;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:120px;
+    font-weight:bold;
+    color:yellow;
+    margin-bottom:25px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,255,0,0.6);
+}
+
+button{
+    padding:12px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:6px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#1e7e34;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<div id="letterBox">A</div>
+
+<button onclick="generateLetter()">Generate Letter</button>
+
+</div>
+
+<script>
+
+let toggleColor = false;
+
+function generateLetter(){
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const randomLetter = alphabet[Math.floor(Math.random()*26)];
+
+    const box = document.getElementById("letterBox");
+    box.textContent = randomLetter;
+
+    if(toggleColor){
+        box.style.color = "yellow";
+    }else{
+        box.style.color = "skyblue";
+    }
+
+    toggleColor = !toggleColor;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>English Hindi Word Match Tool</title>
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:#f4f6fb;
+text-align:center;
+padding:20px;
+}
+
+h2{
+margin:10px 0;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,160px);
+justify-content:center;
+gap:12px;
+margin:15px 0;
+}
+
+.wordBtn{
+padding:14px;
+font-size:18px;
+border:none;
+cursor:pointer;
+border-radius:12px;
+transition:0.3s;
+font-weight:bold;
+}
+
+.wordBtn:hover{
+transform:scale(1.05);
+}
+
+.selected{
+border:3px solid black;
+}
+
+.controls{
+margin-top:20px;
+}
+
+.checkBtn{
+background:#28a745;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+}
+
+.nextBtn{
+background:#007bff;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+margin-left:10px;
+display:none;
+}
+
+#status{
+font-size:20px;
+font-weight:bold;
+margin:0 15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<hr>
+
+<h2>English Words</h2>
+
+<div class="grid" id="englishWords"></div>
+
+<hr>
+
+<h2>Hindi Words</h2>
+
+<div class="grid" id="hindiWords"></div>
+
+<hr>
+
+<div class="controls">
+
+<button class="checkBtn" onclick="checkAnswer()">Check</button>
+
+<span id="status"></span>
+
+<button class="nextBtn" id="nextBtn" onclick="loadWords()">Next</button>
+
+</div>
+
+
+<script>
+
+let englishSelected=null;
+let hindiSelected=null;
+
+let words=[
+
+{eng:"Apple",hin:"सेब"},
+{eng:"Book",hin:"किताब"},
+{eng:"Water",hin:"पानी"},
+{eng:"Sun",hin:"सूरज"},
+{eng:"Moon",hin:"चाँद"},
+{eng:"Dog",hin:"कुत्ता"},
+{eng:"Cat",hin:"बिल्ली"},
+{eng:"House",hin:"घर"},
+{eng:"Tree",hin:"पेड़"},
+{eng:"Milk",hin:"दूध"},
+{eng:"Road",hin:"सड़क"},
+{eng:"Fire",hin:"आग"},
+{eng:"Rich",hin:"अमीर"},
+{eng:"Car",hin:"गाड़ी"}, {eng:"Train",hin:"रेलगाड़ी"}, {eng:"Plane",hin:"हवाई जहाज"}, {eng:"Boat",hin:"नाव"}, {eng:"Chair",hin:"कुर्सी"}, {eng:"Table",hin:"मेज"}, {eng:"Door",hin:"दरवाज़ा"}, {eng:"Window",hin:"खिड़की"}, {eng:"School",hin:"स्कूल"}, {eng:"Teacher",hin:"शिक्षक"}, {eng:"Student",hin:"विद्यार्थी"}, {eng:"Pen",hin:"कलम"}, {eng:"Pencil",hin:"पेंसिल"}, {eng:"Paper",hin:"कागज़"}, {eng:"Bag",hin:"बैग"}, {eng:"Market",hin:"बाज़ार"}, {eng:"Shop",hin:"दुकान"}, {eng:"Farmer",hin:"किसान"}, {eng:"Field",hin:"खेत"}, {eng:"River",hin:"नदी"}, {eng:"Mountain",hin:"पहाड़"}, {eng:"Sea",hin:"समुद्र"}, {eng:"Rain",hin:"बारिश"}, {eng:"Cloud",hin:"बादल"}, {eng:"Wind",hin:"हवा"}, {eng:"Cold",hin:"ठंड"}, {eng:"Hot",hin:"गरम"}, {eng:"Food",hin:"भोजन"}, {eng:"Rice",hin:"चावल"}, {eng:"Bread",hin:"रोटी"}, {eng:"Salt",hin:"नमक"}, {eng:"Sugar",hin:"चीनी"}, {eng:"Tea",hin:"चाय"}, {eng:"Coffee",hin:"कॉफी"}, {eng:"Fruit",hin:"फल"}, {eng:"Vegetable",hin:"सब्ज़ी"}, {eng:"Flower",hin:"फूल"}, {eng:"Garden",hin:"बगीचा"}, {eng:"Bird",hin:"पक्षी"}, {eng:"Fish",hin:"मछली"}, {eng:"Horse",hin:"घोड़ा"}, {eng:"Cow",hin:"गाय"}, {eng:"Goat",hin:"बकरी"}, {eng:"Lion",hin:"शेर"}, {eng:"Tiger",hin:"बाघ"}, {eng:"Elephant",hin:"हाथी"}, {eng:"Monkey",hin:"बंदर"}, {eng:"Snake",hin:"साँप"}, {eng:"Hand",hin:"हाथ"}, {eng:"Leg",hin:"पैर"}, {eng:"Head",hin:"सिर"}, {eng:"Eye",hin:"आँख"}, {eng:"Ear",hin:"कान"}, {eng:"Nose",hin:"नाक"}, {eng:"Mouth",hin:"मुंह"}, {eng:"Tooth",hin:"दाँत"}, {eng:"Heart",hin:"दिल"}, {eng:"Blood",hin:"खून"}, {eng:"Doctor",hin:"डॉक्टर"}, {eng:"Hospital",hin:"अस्पताल"}, {eng:"Medicine",hin:"दवा"}, {eng:"Police",hin:"पुलिस"}, {eng:"Army",hin:"सेना"}, {eng:"Judge",hin:"न्यायाधीश"}, {eng:"Law",hin:"कानून"}, {eng:"City",hin:"शहर"}, {eng:"Village",hin:"गाँव"}, {eng:"Country",hin:"देश"}, {eng:"World",hin:"दुनिया"}, {eng:"Family",hin:"परिवार"}, {eng:"Father",hin:"पिता"}, {eng:"Mother",hin:"माता"}, {eng:"Brother",hin:"भाई"}, {eng:"Sister",hin:"बहन"}, {eng:"Child",hin:"बच्चा"}, {eng:"Friend",hin:"दोस्त"}, {eng:"Enemy",hin:"दुश्मन"}, {eng:"Love",hin:"प्यार"}, {eng:"Hate",hin:"नफरत"}, {eng:"Happy",hin:"खुश"}, {eng:"Sad",hin:"उदास"}, {eng:"Angry",hin:"गुस्सा"}, {eng:"Fast",hin:"तेज़"}, {eng:"Slow",hin:"धीमा"}, {eng:"Big",hin:"बड़ा"}, {eng:"Small",hin:"छोटा"}, {eng:"Long",hin:"लंबा"}, {eng:"Short",hin:"छोटा"}, {eng:"Clean",hin:"साफ"}, {eng:"Dirty",hin:"गंदा"}, {eng:"New",hin:"नया"}, {eng:"Old",hin:"पुराना"}, {eng:"Easy",hin:"आसान"}, {eng:"Difficult",hin:"कठिन"}, {eng:"Truth",hin:"सच"}, {eng:"Lie",hin:"झूठ"}, {eng:"Time",hin:"समय"}, {eng:"Day",hin:"दिन"}, {eng:"Night",hin:"रात"}, {eng:"Morning",hin:"सुबह"}, {eng:"Evening",hin:"शाम"}, {eng:"Week",hin:"सप्ताह"}, {eng:"Month",hin:"महीना"}, {eng:"Year",hin:"साल"}, {eng:"Money",hin:"पैसा"}, {eng:"Gold",hin:"सोना"}, {eng:"Silver",hin:"चाँदी"},
+{eng:"Stone",hin:"पत्थर"}, {eng:"Brick",hin:"ईंट"}, {eng:"Wall",hin:"दीवार"}, {eng:"Roof",hin:"छत"}, {eng:"Floor",hin:"फर्श"}, {eng:"Well",hin:"कुआँ"}, {eng:"Lake",hin:"झील"}, {eng:"Island",hin:"द्वीप"}, {eng:"Forest",hin:"जंगल"}, {eng:"Desert",hin:"रेगिस्तान"}, {eng:"Valley",hin:"घाटी"}, {eng:"Hill",hin:"पहाड़ी"}, {eng:"Sand",hin:"रेत"}, {eng:"Dust",hin:"धूल"}, {eng:"Smoke",hin:"धुआँ"}, {eng:"Ash",hin:"राख"}, {eng:"Ice",hin:"बर्फ"}, {eng:"Steam",hin:"भाप"}, {eng:"Seed",hin:"बीज"}, {eng:"Root",hin:"जड़"}, {eng:"Leaf",hin:"पत्ता"}, {eng:"Branch",hin:"डाली"}, {eng:"Bark",hin:"छाल"}, {eng:"Nest",hin:"घोंसला"}, {eng:"Feather",hin:"पंख"}, {eng:"Claw",hin:"नाखून"}, {eng:"Tail",hin:"पूंछ"}, {eng:"Wing",hin:"पंखुड़ी"}, {eng:"Beak",hin:"चोंच"}, {eng:"Shell",hin:"खोल"}, {eng:"Honey",hin:"शहद"}, {eng:"Butter",hin:"मक्खन"}, {eng:"Curd",hin:"दही"}, {eng:"Soup",hin:"सूप"}, {eng:"Spice",hin:"मसाला"}, {eng:"Oil",hin:"तेल"}, {eng:"Knife",hin:"चाकू"}, {eng:"Spoon",hin:"चम्मच"}, {eng:"Plate",hin:"थाली"}, {eng:"Cup",hin:"कप"}, {eng:"Bottle",hin:"बोतल"}, {eng:"Bucket",hin:"बाल्टी"}, {eng:"Rope",hin:"रस्सी"}, {eng:"Chain",hin:"जंजीर"}, {eng:"Lock",hin:"ताला"}, {eng:"Key",hin:"चाबी"}, {eng:"Wheel",hin:"पहिया"}, {eng:"Engine",hin:"इंजन"}, {eng:"Fuel",hin:"ईंधन"}, {eng:"Driver",hin:"चालक"}, {eng:"Passenger",hin:"यात्री"}, {eng:"Journey",hin:"यात्रा"}, {eng:"Path",hin:"रास्ता"}, {eng:"Direction",hin:"दिशा"}, {eng:"Distance",hin:"दूरी"}, {eng:"Speed",hin:"गति"}, {eng:"Weight",hin:"वजन"}, {eng:"Height",hin:"ऊँचाई"}, {eng:"Depth",hin:"गहराई"}, {eng:"Surface",hin:"सतह"}, {eng:"Edge",hin:"किनारा"}, {eng:"Corner",hin:"कोना"}, {eng:"Center",hin:"केंद्र"}, {eng:"Balance",hin:"संतुलन"}, {eng:"Growth",hin:"विकास"}, {eng:"Change",hin:"परिवर्तन"}, {eng:"Choice",hin:"चयन"}, {eng:"Effort",hin:"प्रयास"}, {eng:"Result",hin:"परिणाम"}, {eng:"Success",hin:"सफलता"}, {eng:"Failure",hin:"असफलता"}, {eng:"Skill",hin:"कौशल"}, {eng:"Talent",hin:"प्रतिभा"}, {eng:"Memory",hin:"स्मृति"}, {eng:"Knowledge",hin:"ज्ञान"}, {eng:"Wisdom",hin:"बुद्धिमत्ता"}, {eng:"Freedom",hin:"स्वतंत्रता"}, {eng:"Justice",hin:"न्याय"}, {eng:"Peace",hin:"शांति"},
+{eng:"Ant",hin:"चींटी"}, {eng:"Bee",hin:"मधुमक्खी"}, {eng:"Crow",hin:"कौआ"}, {eng:"Parrot",hin:"तोता"}, {eng:"Peacock",hin:"मोर"}, {eng:"Sparrow",hin:"गौरैया"}, {eng:"Owl",hin:"उल्लू"}, {eng:"Duck",hin:"बतख"}, {eng:"Hen",hin:"मुर्गी"}, {eng:"Rooster",hin:"मुर्गा"}, {eng:"Pigeon",hin:"कबूतर"}, {eng:"Wolf",hin:"भेड़िया"}, {eng:"Fox",hin:"लोमड़ी"}, {eng:"Deer",hin:"हिरण"}, {eng:"Bear",hin:"भालू"}, {eng:"Camel",hin:"ऊँट"}, {eng:"Donkey",hin:"गधा"}, {eng:"Rabbit",hin:"खरगोश"}, {eng:"Frog",hin:"मेंढक"}, {eng:"Crocodile",hin:"मगरमच्छ"}, {eng:"Lizard",hin:"छिपकली"}, {eng:"Turtle",hin:"कछुआ"}, {eng:"Butterfly",hin:"तितली"}, {eng:"Spider",hin:"मकड़ी"}, {eng:"Grass",hin:"घास"}, {eng:"Cactus",hin:"नागफनी"}, {eng:"Lotus",hin:"कमल"}, {eng:"Rose",hin:"गुलाब"}, {eng:"Jasmine",hin:"चमेली"}, {eng:"Mango",hin:"आम"}, {eng:"Banana",hin:"केला"}, {eng:"Grapes",hin:"अंगूर"}, {eng:"Guava",hin:"अमरूद"}, {eng:"Papaya",hin:"पपीता"}, {eng:"OrangeFruit",hin:"संतरा"}, {eng:"Lemon",hin:"नींबू"}, {eng:"Coconut",hin:"नारियल"}, {eng:"Almond",hin:"बादाम"}, {eng:"Peanut",hin:"मूंगफली"}, {eng:"Walnut",hin:"अखरोट"}, {eng:"Onion",hin:"प्याज"}, {eng:"Potato",hin:"आलू"}, {eng:"Tomato",hin:"टमाटर"}, {eng:"Carrot",hin:"गाजर"}, {eng:"Radish",hin:"मूली"}, {eng:"Cabbage",hin:"पत्तागोभी"}, {eng:"Spinach",hin:"पालक"}, {eng:"Pumpkin",hin:"कद्दू"}, {eng:"Cucumber",hin:"खीरा"}, {eng:"Garlic",hin:"लहसुन"}, {eng:"Ginger",hin:"अदरक"}, {eng:"Turmeric",hin:"हल्दी"}, {eng:"Chili",hin:"मिर्च"}, {eng:"Mustard",hin:"सरसों"}, {eng:"Wheat",hin:"गेहूँ"}, {eng:"Barley",hin:"जौ"}, {eng:"Corn",hin:"मक्का"}, {eng:"Lentil",hin:"मसूर"}, {eng:"Bean",hin:"सेम"}, {eng:"Thread",hin:"धागा"}, {eng:"Cloth",hin:"कपड़ा"}, {eng:"Shirt",hin:"कमीज"}, {eng:"Pant",hin:"पतलून"}, {eng:"Shoe",hin:"जूता"}, {eng:"Slipper",hin:"चप्पल"}, {eng:"Cap",hin:"टोपी"}, {eng:"Ring",hin:"अंगूठी"}, {eng:"Necklace",hin:"हार"}, {eng:"Bracelet",hin:"कंगन"}, {eng:"Mirror",hin:"आईना"}, {eng:"Comb",hin:"कंघी"}, {eng:"Soap",hin:"साबुन"}, {eng:"Towel",hin:"तौलिया"}, {eng:"Brush",hin:"ब्रश"}, {eng:"Paste",hin:"मंजन"}, {eng:"Bed",hin:"बिस्तर"}, {eng:"Pillow",hin:"तकिया"}, {eng:"Blanket",hin:"कंबल"}, {eng:"Curtain",hin:"परदा"}, {eng:"Lamp",hin:"दीपक"}, {eng:"Candle",hin:"मोमबत्ती"}, {eng:"Torch",hin:"मशाल"}, {eng:"Bell",hin:"घंटी"}, {eng:"Drum",hin:"ढोल"}, {eng:"Flute",hin:"बांसुरी"}, {eng:"Guitar",hin:"गिटार"}, {eng:"MarketPlace",hin:"हाट"}, {eng:"Office",hin:"कार्यालय"}, {eng:"Library",hin:"पुस्तकालय"}, {eng:"Laboratory",hin:"प्रयोगशाला"}, {eng:"Factory",hin:"कारखाना"}, {eng:"Workshop",hin:"कार्यशाला"}, {eng:"GardenBed",hin:"फुलवारी"}, {eng:"Playground",hin:"खेल का मैदान"}, {eng:"Court",hin:"अदालत"}, {eng:"Prison",hin:"जेल"}, {eng:"Border",hin:"सीमा"}, {eng:"Flag",hin:"झंडा"}, {eng:"Capital",hin:"राजधानी"}, {eng:"History",hin:"इतिहास"}, 
+{eng:"Actor",hin:"अभिनेता"}, {eng:"Actress",hin:"अभिनेत्री"}, {eng:"Author",hin:"लेखक"}, {eng:"Artist",hin:"कलाकार"}, {eng:"Singer",hin:"गायक"}, {eng:"Dancer",hin:"नर्तक"}, {eng:"Painter",hin:"चित्रकार"}, {eng:"Pilot",hin:"पायलट"}, {eng:"Engineer",hin:"अभियंता"}, {eng:"Scientist",hin:"वैज्ञानिक"}, {eng:"Manager",hin:"प्रबंधक"}, {eng:"Leader",hin:"नेता"}, {eng:"Minister",hin:"मंत्री"}, {eng:"President",hin:"राष्ट्रपति"}, {eng:"King",hin:"राजा"}, {eng:"Queen",hin:"रानी"}, {eng:"Prince",hin:"राजकुमार"}, {eng:"Princess",hin:"राजकुमारी"}, {eng:"Soldier",hin:"सैनिक"}, {eng:"Guard",hin:"पहरेदार"}, {eng:"Thief",hin:"चोर"}, {eng:"Robber",hin:"डाकू"}, {eng:"Neighbor",hin:"पड़ोसी"}, {eng:"Guest",hin:"मेहमान"}, {eng:"Host",hin:"मेज़बान"}, {eng:"Owner",hin:"मालिक"}, {eng:"Worker",hin:"मज़दूर"}, {eng:"DriverSeat",hin:"ड्राइवर सीट"}, {eng:"PassengerSeat",hin:"यात्री सीट"}, {eng:"Helmet",hin:"हेलमेट"}, {eng:"Uniform",hin:"वर्दी"}, {eng:"Badge",hin:"बैज"}, {eng:"Medal",hin:"पदक"}, {eng:"Prize",hin:"इनाम"}, {eng:"Reward",hin:"पुरस्कार"}, {eng:"Punishment",hin:"सज़ा"}, {eng:"Warning",hin:"चेतावनी"}, {eng:"Signal",hin:"संकेत"}, {eng:"Symbol",hin:"प्रतीक"}, {eng:"Mark",hin:"निशान"}, {eng:"Stamp",hin:"मुहर"}, {eng:"Note",hin:"टिप्पणी"}, {eng:"Record",hin:"रिकॉर्ड"}, {eng:"File",hin:"फ़ाइल"}, {eng:"Document",hin:"दस्तावेज़"}, {eng:"Report",hin:"रिपोर्ट"}, {eng:"Plan",hin:"योजना"}, {eng:"Project",hin:"परियोजना"}, {eng:"Mission",hin:"मिशन"}, {eng:"Target",hin:"निशाना"}, {eng:"Budget",hin:"बजट"}, {eng:"Profit",hin:"लाभ"}, {eng:"Loss",hin:"हानि"}, {eng:"Trade",hin:"व्यापार"}, {eng:"Business",hin:"व्यवसाय"}, {eng:"Industry",hin:"उद्योग"}, {eng:"Company",hin:"कंपनी"}, {eng:"Product",hin:"उत्पाद"}, {eng:"Service",hin:"सेवा"}, {eng:"Customer",hin:"ग्राहक"}, {eng:"Client",hin:"मुवक्किल"}, {eng:"Order",hin:"आदेश"}, {eng:"Delivery",hin:"डिलीवरी"}, {eng:"Package",hin:"पार्सल"}, {eng:"Warehouse",hin:"गोदाम"}, {eng:"Storage",hin:"भंडारण"}, {eng:"Supply",hin:"आपूर्ति"}, {eng:"Demand",hin:"मांग"}, {eng:"MarketPrice",hin:"बाज़ार भाव"}, {eng:"Discount",hin:"छूट"}, {eng:"Tax",hin:"कर"}, {eng:"Bill",hin:"बिल"}, {eng:"Receipt",hin:"रसीद"}, {eng:"Account",hin:"खाता"}, {eng:"BalanceSheet",hin:"तुलन पत्र"}, {eng:"Investment",hin:"निवेश"}, {eng:"Saving",hin:"बचत"}, {eng:"Loan",hin:"ऋण"}, {eng:"Interest",hin:"ब्याज"}, {eng:"Bank",hin:"बैंक"}, {eng:"Locker",hin:"लॉकर"}, {eng:"Cheque",hin:"चेक"}, {eng:"Signature",hin:"हस्ताक्षर"}, {eng:"Password",hin:"पासवर्ड"}, {eng:"Code",hin:"कोड"}, {eng:"Network",hin:"संजाल"}, {eng:"Data",hin:"आँकड़े"}, {eng:"Server",hin:"सर्वर"}, {eng:"Update",hin:"अद्यतन"}, {eng:"Upgrade",hin:"उन्नयन"}, {eng:"Download",hin:"डाउनलोड"}, {eng:"Upload",hin:"अपलोड"}, {eng:"Search",hin:"खोज"}, {eng:"Link",hin:"कड़ी"}, {eng:"Website",hin:"वेबसाइट"}, {eng:"Page",hin:"पृष्ठ"}, {eng:"Content",hin:"सामग्री"}, {eng:"Editor",hin:"संपादक"}, {eng:"Publisher",hin:"प्रकाशक"}, {eng:"Edition",hin:"संस्करण"}, {eng:"Volume",hin:"खंड"}, {eng:"Chapter",hin:"अध्याय"},
+{eng:"Ability",hin:"क्षमता"}, {eng:"Access",hin:"पहुंच"}, {eng:"Accident",hin:"दुर्घटना"}, {eng:"Action",hin:"कार्य"}, {eng:"Activity",hin:"गतिविधि"}, {eng:"Advice",hin:"सलाह"}, {eng:"Agreement",hin:"समझौता"}, {eng:"Air",hin:"वायु"}, {eng:"Alarm",hin:"अलार्म"}, {eng:"Angle",hin:"कोण"}, {eng:"Animal",hin:"जानवर"}, {eng:"AnswerSheet",hin:"उत्तरपुस्तिका"}, {eng:"Application",hin:"आवेदन"}, {eng:"Area",hin:"क्षेत्र"}, {eng:"Argument",hin:"बहस"}, {eng:"ArmyCamp",hin:"सैनिक शिविर"}, {eng:"Arrival",hin:"आगमन"}, {eng:"Attack",hin:"हमला"}, {eng:"Attempt",hin:"प्रयास"}, {eng:"Audience",hin:"दर्शक"}, {eng:"Authority",hin:"अधिकार"}, {eng:"Awareness",hin:"जागरूकता"}, {eng:"Background",hin:"पृष्ठभूमि"}, {eng:"Battle",hin:"युद्ध"}, {eng:"Behavior",hin:"व्यवहार"}, {eng:"Benefit",hin:"फायदा"}, {eng:"Birth",hin:"जन्म"}, {eng:"Blame",hin:"दोष"}, {eng:"Body",hin:"शरीर"}, {eng:"BorderLine",hin:"सीमारेखा"}, {eng:"Brain",hin:"मस्तिष्क"}, {eng:"Building",hin:"इमारत"}, {eng:"Burden",hin:"बोझ"}, {eng:"Businessman",hin:"व्यापारी"}, {eng:"Calculation",hin:"गणना"}, {eng:"Campaign",hin:"अभियान"}, {eng:"Care",hin:"देखभाल"}, {eng:"Cause",hin:"कारण"}, {eng:"Celebration",hin:"उत्सव"}, {eng:"Challenge",hin:"चुनौती"}, {eng:"Character",hin:"चरित्र"}, {eng:"Charge",hin:"आरोप"}, {eng:"Childhood",hin:"बचपन"}, {eng:"Citizen",hin:"नागरिक"}, {eng:"Classroom",hin:"कक्षा"}, {eng:"Climate",hin:"जलवायु"}, {eng:"Clue",hin:"सुराग"}, {eng:"Collection",hin:"संग्रह"}, {eng:"Comment",hin:"टिप्पणी"}, {eng:"Communication",hin:"संचार"}, {eng:"Community",hin:"समुदाय"}, {eng:"Competition",hin:"प्रतियोगिता"}, {eng:"Complaint",hin:"शिकायत"}, {eng:"Conclusion",hin:"निष्कर्ष"}, {eng:"Condition",hin:"स्थिति"}, {eng:"Conference",hin:"सम्मेलन"}, {eng:"Confidence",hin:"आत्मविश्वास"}, {eng:"Connection",hin:"संबंध"}, {eng:"Construction",hin:"निर्माण"}, {eng:"Contact",hin:"संपर्क"}, {eng:"Control",hin:"नियंत्रण"}, {eng:"Conversation",hin:"बातचीत"}, {eng:"Cooperation",hin:"सहयोग"}, {eng:"Culture",hin:"संस्कृति"}, {eng:"Damage",hin:"नुकसान"}, {eng:"Danger",hin:"खतरा"}, {eng:"Decision",hin:"निर्णय"}, {eng:"Definition",hin:"परिभाषा"}, {eng:"Delay",hin:"देरी"}, {eng:"Demanding",hin:"मांगपूर्ण"}, {eng:"Department",hin:"विभाग"}, {eng:"Departure",hin:"प्रस्थान"}, {eng:"Description",hin:"विवरण"}, {eng:"Design",hin:"डिज़ाइन"}, {eng:"Detail",hin:"विवरण"}, {eng:"Development",hin:"विकास"}, {eng:"Difference",hin:"अंतर"}, {eng:"Difficulty",hin:"कठिनाई"}, {eng:"DirectionSign",hin:"दिशासूचक"}, {eng:"Discovery",hin:"खोज"}, {eng:"Discussion",hin:"चर्चा"}, {eng:"Disease",hin:"रोग"}, {eng:"Discipline",hin:"अनुशासन"}, {eng:"Education",hin:"शिक्षा"}, {eng:"Effect",hin:"प्रभाव"}, {eng:"Emotion",hin:"भावना"}, {eng:"Employment",hin:"रोजगार"}, {eng:"Environment",hin:"पर्यावरण"}, {eng:"Equipment",hin:"उपकरण"}, {eng:"Error",hin:"त्रुटि"}, {eng:"Event",hin:"घटना"}, {eng:"Evidence",hin:"साक्ष्य"}, {eng:"Examination",hin:"परीक्षा"}, {eng:"ExampleCase",hin:"उदाहरण मामला"}, {eng:"Exchange",hin:"विनिमय"}, {eng:"Experience",hin:"अनुभव"}, {eng:"Experiment",hin:"प्रयोग"}, {eng:"Explanation",hin:"व्याख्या"}, {eng:"Expression",hin:"अभिव्यक्ति"} 
+
+];
+
+let currentSet=[];
+
+const colorPairs=[
+{bg:"#ff6b6b",text:"#ffffff"},
+{bg:"#4dabf7",text:"#ffffff"},
+{bg:"#51cf66",text:"#ffffff"},
+{bg:"#ffd43b",text:"#000000"},
+{bg:"#845ef7",text:"#ffffff"},
+{bg:"#ff922b",text:"#ffffff"},
+{bg:"#20c997",text:"#ffffff"},
+{bg:"#339af0",text:"#ffffff"},
+{bg:"#f06595",text:"#ffffff"},
+{bg:"#94d82d",text:"#000000"}
+];
+
+function randomColorPair(){
+
+return colorPairs[Math.floor(Math.random()*colorPairs.length)];
+
+}
+
+function loadWords(){
+
+englishSelected=null;
+hindiSelected=null;
+
+document.getElementById("status").innerText="";
+document.getElementById("nextBtn").style.display="none";
+
+let engDiv=document.getElementById("englishWords");
+let hinDiv=document.getElementById("hindiWords");
+
+engDiv.innerHTML="";
+hinDiv.innerHTML="";
+
+
+let shuffled=[...words].sort(()=>0.5-Math.random()).slice(0,6);
+
+currentSet=shuffled;
+
+let hindiList=[...shuffled].map(w=>w.hin).sort(()=>0.5-Math.random());
+
+
+shuffled.forEach(word=>{
+
+let btn=document.createElement("button");
+
+let color=randomColorPair();
+
+btn.innerText=word.eng;
+
+btn.className="wordBtn";
+
+btn.style.background=color.bg;
+
+btn.style.color=color.text;
+
+btn.onclick=function(){
+
+if(englishSelected) return;
+
+englishSelected=word.eng;
+
+btn.classList.add("selected");
+
+};
+
+engDiv.appendChild(btn);
+
+});
+
+
+hindiList.forEach(word=>{
+
+let btn=document.createElement("button");
+
+let color=randomColorPair();
+
+btn.innerText=word;
+
+btn.className="wordBtn";
+
+btn.style.background=color.bg;
+
+btn.style.color=color.text;
+
+btn.onclick=function(){
+
+if(hindiSelected) return;
+
+hindiSelected=word;
+
+btn.classList.add("selected");
+
+};
+
+hinDiv.appendChild(btn);
+
+});
+
+}
+
+
+function checkAnswer(){
+
+if(!englishSelected || !hindiSelected){
+
+document.getElementById("status").innerText="Select both words";
+
+return;
+
+}
+
+let correct=currentSet.find(w=>w.eng===englishSelected);
+
+if(correct.hin===hindiSelected){
+
+document.getElementById("status").innerText="Right ✅";
+document.getElementById("status").style.color="green";
+
+}else{
+
+document.getElementById("status").innerText="Wrong ❌";
+document.getElementById("status").style.color="red";
+
+}
+
+document.getElementById("nextBtn").style.display="inline-block";
+
+}
+
+loadWords();
+
+</script>
+
+</body>
+</html>
